@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "Digital Banking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "staffToken", "value": "" },
+    { "key": "accountId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Freeze account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Suspicious activity detected\"\n}" },
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/freeze"
+          }
+        },
+        {
+          "name": "Unfreeze account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/unfreeze"
+          }
+        },
+        {
+          "name": "Status history",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/status-history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Staff",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/staff/dashboard?from=2026-09-01&to=2026-09-04"
+          }
+        }
+      ]
+    }
+  ]
+}

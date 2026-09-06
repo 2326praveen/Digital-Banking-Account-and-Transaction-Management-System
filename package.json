@@ -1,0 +1,21 @@
+{
+  "name": "digital-banking-account-transaction-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Academic digital banking backend with Member 4 account controls and staff monitoring APIs",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5"
+  }
+}
