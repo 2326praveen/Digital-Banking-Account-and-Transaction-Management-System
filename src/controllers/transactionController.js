@@ -1,34 +1,25 @@
 const Transaction = require("../models/Transaction");
+const { validateTransactionQuery } = require("../validators/transactionValidator");
 
 exports.getTransactions = async (req, res) => {
   try {
     const { accountId } = req.params;
     const { type, from, to, page = 1, limit = 20 } = req.query;
 
-    const filter = { accountId };
-
-    if (type) {
-      if (!["DEBIT", "CREDIT"].includes(type)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid transaction type",
-          errorCode: "INVALID_TRANSACTION_TYPE",
-        });
-      }
-      filter.type = type;
+    const errors = validateTransactionQuery(req.query);
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errorCode: "INVALID_PAGINATION",
+        errors,
+      });
     }
 
+    const filter = { accountId };
+    if (type) filter.type = type;
     if (from && to) {
-      const fromDate = new Date(from);
-      const toDate = new Date(to);
-      if (fromDate > toDate) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid date range",
-          errorCode: "INVALID_DATE_RANGE",
-        });
-      }
-      filter.createdAt = { $gte: fromDate, $lte: toDate };
+      filter.createdAt = { $gte: new Date(from), $lte: new Date(to) };
     }
 
     const pageNum = Math.max(1, parseInt(page));
