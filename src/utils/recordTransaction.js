@@ -1,14 +1,22 @@
 const Transaction = require("../models/Transaction");
+const { checkSuspicious } = require("../services/suspiciousTransactionService");
 
-const SUSPICIOUS_AMOUNT_THRESHOLD = process.env.SUSPICIOUS_AMOUNT_THRESHOLD || 50000;
-
-async function recordTransaction({ accountId, type, amount, balanceAfter, transferId }) {
+async function recordTransaction({
+  accountId,
+  type,
+  amount,
+  balanceAfter,
+  relatedAccount = null,
+  transferId,
+}) {
   let flagged = false;
   let flagReason = null;
 
-  if (amount > SUSPICIOUS_AMOUNT_THRESHOLD) {
-    flagged = true;
-    flagReason = `Amount exceeds threshold of ${SUSPICIOUS_AMOUNT_THRESHOLD}`;
+  // Only check the DEBIT side per spec's flagging policy
+  if (type === "DEBIT") {
+    const result = await checkSuspicious(accountId, amount);
+    flagged = result.flagged;
+    flagReason = result.flagReason;
   }
 
   const txn = await Transaction.create({
@@ -16,9 +24,11 @@ async function recordTransaction({ accountId, type, amount, balanceAfter, transf
     type,
     amount,
     balanceAfter,
+    relatedAccount,
     transferId,
     flagged,
     flagReason,
+    status: "SUCCESS",
   });
 
   return txn;
