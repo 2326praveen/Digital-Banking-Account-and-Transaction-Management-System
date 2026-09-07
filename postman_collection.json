@@ -1,0 +1,568 @@
+{
+  "info": {
+    "_postman_id": "8432a9a7-9b4e-4b62-b91b-6899479b1834",
+    "name": "Member 2 - Beneficiary & Transfer APIs",
+    "description": "Postman Collection for Digital Banking Module 4 (Beneficiary Management), Module 5 (Fund Transfer Engine), and Module 8 (Limit & Balance Enforcement).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "sourceAccountId",
+      "value": "60d0fe4f5311236168a109ca",
+      "type": "string"
+    },
+    {
+      "key": "beneficiaryId",
+      "value": "60d0fe4f5311236168a109cb",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Module 4 - Beneficiary Management",
+      "item": [
+        {
+          "name": "1. Add Beneficiary (201 Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "2. Add Beneficiary - Invalid Source Account (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"000000000000000000000000\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "3. Add Beneficiary - Source Owned by Another User (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{otherUserAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "4. Add Beneficiary - Destination Doesn't Exist (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"99999999\",\n  \"nickname\": \"Non Existent\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "5. Add Beneficiary - Self Beneficiary (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000001\",\n  \"nickname\": \"My Account\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "6. Add Beneficiary - Duplicate Beneficiary (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "7. Add Beneficiary - Frozen Source Account (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{frozenAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries"]
+            }
+          }
+        },
+        {
+          "name": "8. List Own Beneficiaries by Account (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries/account/{{sourceAccountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries", "account", "{{sourceAccountId}}"]
+            }
+          }
+        },
+        {
+          "name": "9. List Another User's Beneficiaries (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries/account/{{otherUserAccountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries", "account", "{{otherUserAccountId}}"]
+            }
+          }
+        },
+        {
+          "name": "10. Get Beneficiary By ID (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries/{{beneficiaryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries", "{{beneficiaryId}}"]
+            }
+          }
+        },
+        {
+          "name": "11. Delete Own Beneficiary (200)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/beneficiaries/{{beneficiaryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "beneficiaries", "{{beneficiaryId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 5 & 8 - Fund Transfer Engine",
+      "item": [
+        {
+          "name": "1. Successful Transfer (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "2. Transfer - Zero Amount (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "3. Transfer - Negative Amount (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": -100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "4. Transfer - Excessive Decimal Places (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 100.005\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "5. Transfer - Insufficient Balance (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 9999999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "6. Transfer - Minimum Balance Violation (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 46000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "7. Transfer - Daily Limit Exceeded (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 35000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "8. Transfer - Frozen Source Account (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{frozenAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "9. Transfer - Beneficiary Belongs to Another Account (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{otherAccountBeneficiaryId}}\",\n  \"amount\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "10. Transfer - Missing JWT (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
