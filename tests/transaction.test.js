@@ -56,3 +56,18 @@ describe("Transaction Ledger", () => {
   });
 
   test("pagination returns correct slice", async () => {
+    await Transaction.create([
+      { accountId, type: "DEBIT", amount: 100, balanceAfter: 9900 },
+      { accountId, type: "CREDIT", amount: 200, balanceAfter: 10100 },
+      { accountId, type: "DEBIT", amount: 50, balanceAfter: 10050 },
+    ]);
+
+    const transactions = await Transaction.find({ accountId })
+      .sort({ createdAt: 1 })
+      .skip(1)
+      .limit(1);
+
+    expect(transactions).toHaveLength(1);
+    expect(transactions[0].type).toBe("CREDIT");
+  });
+});
