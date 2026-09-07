@@ -1,34 +1,25 @@
 const Transaction = require("../models/Transaction");
+const { validateStatementQuery } = require("../validators/statementValidator");
 
 exports.getStatement = async (req, res) => {
   try {
     const { accountId } = req.params;
     const { from, to, type, page = 1, limit = 20 } = req.query;
 
-    const filter = { accountId };
-
-    if (type) {
-      if (!["DEBIT", "CREDIT"].includes(type)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid transaction type",
-          errorCode: "INVALID_TRANSACTION_TYPE",
-        });
-      }
-      filter.type = type;
+    const errors = validateStatementQuery(req.query);
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errorCode: "INVALID_PAGINATION",
+        errors,
+      });
     }
 
+    const filter = { accountId };
+    if (type) filter.type = type;
     if (from && to) {
-      const fromDate = new Date(from);
-      const toDate = new Date(to);
-      if (fromDate > toDate) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid date range",
-          errorCode: "INVALID_DATE_RANGE",
-        });
-      }
-      filter.createdAt = { $gte: fromDate, $lte: toDate };
+      filter.createdAt = { $gte: new Date(from), $lte: new Date(to) };
     }
 
     const pageNum = Math.max(1, parseInt(page));
@@ -40,16 +31,9 @@ exports.getStatement = async (req, res) => {
       .skip((pageNum - 1) * limitNum)
       .limit(limitNum);
 
-    const totalDebit = transactions
-      .filter((t) => t.type === "DEBIT")
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const totalCredit = transactions
-      .filter((t) => t.type === "CREDIT")
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const currentBalance =
-      transactions.length > 0 ? transactions[0].balanceAfter : null;
+    const totalDebit = transactions.filter(t => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
+    const totalCredit = transactions.filter(t => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
+    const currentBalance = transactions.length > 0 ? transactions[0].balanceAfter : null;
 
     res.status(200).json({
       success: true,
