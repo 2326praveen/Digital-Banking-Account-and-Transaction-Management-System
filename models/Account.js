@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const accountSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   accountNumber: { type: String, required: true },
-  type: { type: String, enum: ['SAVINGS', 'CURRENT'], required: true },
+  type: { type: String, enum: ['SAVINGS', 'CHECKING', 'SALARY', 'CURRENT'], default: 'SAVINGS' },
   balance: { type: Number, required: true, min: 0 },
   minimumBalance: { type: Number, required: true, min: 0 },
   dailyTransferLimit: { type: Number, required: true, min: 0 },
