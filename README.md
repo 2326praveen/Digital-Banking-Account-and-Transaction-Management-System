@@ -6,12 +6,12 @@ A secure, audit-compliant core-banking backend system developed for Christ Unive
 
 ## 👥 Team Details
 
-| Member | Name | Roll Number | Department | Section | Role & Modules |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Member 1** | [Member 1 Name] | [Roll No] | Computer Science | [Section] | Auth, KYC, Account Creation, Approval (Modules 1, 2, 3, 13) |
-| **Member 2** | [Member 2 Name] | [Roll No] | Computer Science | [Section] | Beneficiary Management, Transfer Engine, Limit Enforcement (Modules 4, 5, 8) |
-| **Member 3** | [Member 3 Name] | [Roll No] | Computer Science | [Section] | Transaction Ledger, Statements, Freeze/Unfreeze, Interest, Monitoring (Modules 6, 7, 9, 10, 11, 12) |
-| **Member 4** | [Member 4 Name] | [Roll No] | Computer Science | [Section] | Schema Review, Master Postman Suite, Documentation & Frontend Integration |
+| Member | Name | Register Number | Branch / Focus Area | Department | Role & Modules |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| **Member 1** | **Darain** | `2462060` | `auth-kyc-accounts` | Computer Science | Customer Onboarding, KYC, Account Creation, Approval Workflow, RBAC (Modules 1, 2, 3, 13) |
+| **Member 2** | **Praveen** | `2462066` | `beneficiary-transfer` | Computer Science | Beneficiary Management, Fund Transfer Engine, Limits & Min Balance (Modules 4, 5, 8) |
+| **Member 3** | **Bennet** | `2462056` | `ledger-statements-monitoring` | Computer Science | Transaction Ledger, Account Statements, Interest Job, Suspicious Flagging (Modules 6, 7, 9, 11) |
+| **Member 4** | **Devananda** | `2462063` | `freeze-dashboard-integration` | Computer Science | Account Freeze/Unfreeze, Staff Monitoring Dashboard, Postman Suite & Integration (Modules 10, 12, Integration) |
 
 ---
 
@@ -84,19 +84,19 @@ npm test
 
 | Module # | Module Name | Owning Member | Code Location | Status |
 | :---: | :--- | :---: | :--- | :---: |
-| **1** | **Customer Onboarding & KYC Capture** | Member 1 | `controllers/authController.js`, `models/User.js` | ✅ Implemented |
-| **2** | **Account Approval Workflow** | Member 1 | `controllers/accountController.js`, `models/Approval.js` | ✅ Implemented |
-| **3** | **Account Management** | Member 1 | `controllers/accountController.js`, `models/Account.js` | ✅ Implemented |
-| **4** | **Beneficiary Management** | Member 2 | `controllers/beneficiaryController.js`, `models/Beneficiary.js` | ✅ Implemented |
-| **5** | **Fund Transfer Engine** | Member 2 | `services/transferService.js`, `controllers/transferController.js` | ✅ Implemented |
-| **6** | **Transaction Ledger** | Member 3 | `src/models/Transaction.js`, `src/controllers/transactionController.js` | ✅ Implemented |
-| **7** | **Account Statement Generation** | Member 3 | `src/controllers/statementController.js`, `routes/accountRoutes.js` | ✅ Implemented |
-| **8** | **Minimum Balance & Limits Enforcement** | Member 2 | `services/transferService.js`, `utils/transactionHelpers.js` | ✅ Implemented |
-| **9** | **Suspicious Transaction Flagging** | Member 3 | `src/services/suspiciousTransactionService.js`, `routes/staffRoutes.js` | ✅ Implemented |
-| **10** | **Account Freeze / Unfreeze** | Member 3 | `src/services/freezeService.js`, `src/models/AccountStatusHistory.js` | ✅ Implemented |
-| **11** | **Interest Calculation Job Logic** | Member 3 | `src/jobs/interestJob.js`, `src/services/interestService.js` | ✅ Implemented |
-| **12** | **Staff Monitoring Dashboard** | Member 3 | `src/services/staffDashboardService.js`, `routes/staffRoutes.js` | ✅ Implemented |
-| **13** | **Role-Based Access Control (RBAC)** | Member 1 | `middleware/auth.js`, `middleware/role.js` | ✅ Implemented |
+| **1** | **Customer Onboarding & KYC Capture** | **Darain (2462060)** | `controllers/authController.js`, `models/User.js` | ✅ Implemented |
+| **2** | **Account Approval Workflow** | **Darain (2462060)** | `controllers/accountController.js`, `models/Approval.js` | ✅ Implemented |
+| **3** | **Account Management** | **Darain (2462060)** | `controllers/accountController.js`, `models/Account.js` | ✅ Implemented |
+| **4** | **Beneficiary Management** | **Praveen (2462066)** | `controllers/beneficiaryController.js`, `models/Beneficiary.js` | ✅ Implemented |
+| **5** | **Fund Transfer Engine** | **Praveen (2462066)** | `services/transferService.js`, `controllers/transferController.js` | ✅ Implemented |
+| **6** | **Transaction Ledger** | **Bennet (2462056)** | `src/models/Transaction.js`, `src/controllers/transactionController.js` | ✅ Implemented |
+| **7** | **Account Statement Generation** | **Bennet (2462056)** | `src/controllers/statementController.js`, `routes/accountRoutes.js` | ✅ Implemented |
+| **8** | **Minimum Balance & Limits Enforcement** | **Praveen (2462066)** | `services/transferService.js`, `utils/transactionHelpers.js` | ✅ Implemented |
+| **9** | **Suspicious Transaction Flagging** | **Bennet (2462056)** | `src/services/suspiciousTransactionService.js`, `routes/staffRoutes.js` | ✅ Implemented |
+| **10** | **Account Freeze / Unfreeze** | **Devananda (2462063)** | `src/services/freezeService.js`, `src/models/AccountStatusHistory.js` | ✅ Implemented |
+| **11** | **Interest Calculation Job Logic** | **Bennet (2462056)** | `src/jobs/interestJob.js`, `src/services/interestService.js` | ✅ Implemented |
+| **12** | **Staff Monitoring Dashboard** | **Devananda (2462063)** | `src/services/staffDashboardService.js`, `routes/staffRoutes.js` | ✅ Implemented |
+| **13** | **Role-Based Access Control (RBAC)** | **Darain (2462060)** | `middleware/auth.js`, `middleware/role.js` | ✅ Implemented |
 
 ---
 
