@@ -9,9 +9,9 @@ A secure, audit-compliant core-banking backend system developed for Christ Unive
 | Member | Name | Register Number | Branch / Focus Area | Department | Role & Modules |
 | :--- | :--- | :---: | :--- | :--- | :--- |
 | **Member 1** | **Darain** | `2462060` | `auth-kyc-accounts` | Computer Science | Customer Onboarding, KYC, Account Creation, Approval Workflow, RBAC (Modules 1, 2, 3, 13) |
-| **Member 2** | **Praveen** | `2462066` | `beneficiary-transfer` | Computer Science | Beneficiary Management, Fund Transfer Engine, Limits & Min Balance (Modules 4, 5, 8) |
+| **Member 2** | **Praveen** | `2462066` | `beneficiary-transfer` | Computer Science | Beneficiary Management, Fund Transfer Engine, Limits & Min Balance, System Integration (Modules 4, 5, 8, Master Integration) |
 | **Member 3** | **Bennet** | `2462056` | `ledger-statements-monitoring` | Computer Science | Transaction Ledger, Account Statements, Interest Job, Suspicious Flagging (Modules 6, 7, 9, 11) |
-| **Member 4** | **Devananda** | `2462063` | `freeze-dashboard-integration` | Computer Science | Account Freeze/Unfreeze, Staff Monitoring Dashboard, Postman Suite & Integration (Modules 10, 12, Integration) |
+| **Member 4** | **Devananda** | `2462063` | `freeze-dashboard` | Computer Science | Account Freeze/Unfreeze, Staff Monitoring Dashboard (Modules 10, 12) |
 
 ---
 
