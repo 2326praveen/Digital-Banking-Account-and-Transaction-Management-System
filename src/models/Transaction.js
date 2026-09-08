@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+let lastTimestamp = 0;
+
+function getMonotonicTimestamp() {
+  const now = Date.now();
+  lastTimestamp = Math.max(now, lastTimestamp + 1);
+  return new Date(lastTimestamp);
+}
+
 const transactionSchema = new mongoose.Schema(
   {
     accountId: {
@@ -30,7 +38,6 @@ const transactionSchema = new mongoose.Schema(
     },
     transferId: {
       type: String,
-      index: true,
     },
     flagged: {
       type: Boolean,
@@ -50,7 +57,7 @@ const transactionSchema = new mongoose.Schema(
       default: null, // e.g. "INTEREST"
     },
   },
-  { timestamps: true }
+  { timestamps: { currentTime: getMonotonicTimestamp } }
 );
 
 transactionSchema.index({ accountId: 1, createdAt: -1 });
