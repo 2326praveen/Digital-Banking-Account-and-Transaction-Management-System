@@ -85,7 +85,6 @@ function renderUser() {
   $('#user-avatar').textContent = state.user.name.split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase();
   $('#kyc-status').textContent = state.user.kycStatus;
   $('#kyc-note').textContent = state.user.kycStatus === 'VERIFIED' ? 'Your identity is verified' : 'Verification still required';
-  $('#profile-phone').textContent = state.user.phone || 'Not provided';
   $('#today-label').textContent = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 }
 
