@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northstar Banking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/payments.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status"></div>
+  <main id="auth-view" class="auth-layout">
+    <section class="auth-intro">
+      <div class="brand"><span class="brand-mark">N</span><span>northstar<span class="brand-dot">.</span></span></div>
+      <div class="intro-copy">
+        <p class="eyebrow">Personal banking, made lucid</p>
+        <h1>Your money deserves a <em>clearer</em> view.</h1>
+        <p class="intro-text">A calm, considered way to manage your accounts, track your balance, and move forward with confidence.</p>
+      </div>
+      <div class="intro-footer"><span class="signal-dot"></span> Secure banking workspace <span>•</span> 24/7 access</div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-panel-inner">
+        <div class="mobile-brand brand"><span class="brand-mark">N</span><span>northstar<span class="brand-dot">.</span></span></div>
+        <div class="auth-heading">
+          <p class="eyebrow" id="auth-eyebrow">Welcome back</p>
+          <h2 id="auth-title">Sign in to your<br><span>financial home.</span></h2>
+          <p id="auth-subtitle">Your accounts, at a glance.</p>
+        </div>
+        <form id="login-form" class="form-stack">
+          <label>Email address<input type="email" name="email" placeholder="you@example.com" required autocomplete="email"></label>
+          <label>Password<div class="password-wrap"><input type="password" name="password" placeholder="Enter your password" required autocomplete="current-password"><button class="password-toggle" type="button" data-target="login-form">Show</button></div></label>
+          <button class="primary-button" type="submit">Enter workspace <span>↗</span></button>
+        </form>
+        <form id="register-form" class="form-stack hidden">
+          <label>Full name<input type="text" name="name" placeholder="Your name" required></label>
+          <label>Email address<input type="email" name="email" placeholder="you@example.com" required></label>
+          <label>Phone number<input type="tel" name="phone" placeholder="9876543210" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" required autocomplete="tel"></label>
+          <label>PAN<input type="text" name="pan" placeholder="ABCDE1234F" pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]" maxlength="10" required></label>
+          <label>Address<textarea name="address" placeholder="Your residential address" rows="2" required></textarea></label>
+          <label>Date of birth<input type="date" name="dateOfBirth" required autocomplete="bday"></label>
+          <label>Password<div class="password-wrap"><input type="password" name="password" placeholder="Create a password" required minlength="8"><button class="password-toggle" type="button" data-target="register-form">Show</button></div></label>
+          <button class="primary-button" type="submit">Create your account <span>↗</span></button>
+        </form>
+        <p class="form-message" id="auth-message"></p>
+        <p class="switch-auth"><span id="switch-copy">New to Northstar?</span> <button id="switch-auth" type="button">Create an account</button></p>
+      </div>
+    </section>
+  </main>
+
+  <main id="app-view" class="app-layout hidden">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">N</span><span>northstar<span class="brand-dot">.</span></span></div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">◌</span> Overview</button>
+        <button class="nav-item" data-view="accounts"><span class="nav-icon">▤</span> Accounts</button>
+        <button class="nav-item" data-view="payments"><span class="nav-icon">↗</span> Payments</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-box"><span class="help-icon">?</span><div><strong>Need a hand?</strong><small>We're here when you need us.</small></div></div>
+        <button class="logout-button" id="logout-button"><span>↪</span> Sign out</button>
+      </div>
+    </aside>
+    <section class="workspace">
+      <header class="topbar"><div class="mobile-menu">☰</div><div><p class="date-label" id="today-label"></p><h1 id="page-title">Good morning<span id="user-first-name"></span>.</h1></div><div class="topbar-actions"><button class="icon-button" title="Notifications" aria-label="Notifications">♧<i></i></button><div class="avatar" id="user-avatar">NS</div></div></header>
+      <div class="content" id="overview-view">
+        <div class="welcome-strip"><div><span class="eyebrow">Personal overview</span><h2>Your financial north star.</h2><p>Everything important, right where you need it.</p></div><div class="strip-mark">✦</div></div>
+        <section class="metric-grid"><article class="balance-card"><div class="card-top"><span>Total balance</span><span class="card-chip">INR <b>₹</b></span></div><strong id="total-balance">₹0.00</strong><div class="balance-foot"><span id="account-count">0 accounts</span><span class="positive">● Live balance</span></div></article><article class="small-metric"><span class="metric-label">Available now</span><strong id="available-balance">₹0.00</strong><span class="metric-note">Across active accounts</span></article><article class="small-metric"><span class="metric-label">KYC verification</span><strong id="kyc-status">Pending</strong><span class="metric-note" id="kyc-note">Complete your profile</span></article><article class="small-metric"><span class="metric-label">Phone number</span><strong id="profile-phone">Not provided</strong><span class="metric-note">Your registered contact</span></article></section>
+        <section class="section-heading"><div><span class="eyebrow">Your money</span><h2>Accounts</h2></div><button class="outline-button" id="new-account-button">+ Open account</button></section>
+        <div id="account-list" class="account-list"></div>
+        <section class="empty-state hidden" id="no-accounts"><div class="empty-icon">＋</div><h3>Your first account starts here.</h3><p>Open a savings or current account to begin your Northstar journey.</p><button class="primary-button compact" id="empty-open-button">Open an account <span>↗</span></button></section>
+      </div>
+      <div class="content hidden" id="accounts-view"><div class="section-heading page-section-heading"><div><span class="eyebrow">All balances</span><h2>Accounts</h2></div><button class="outline-button" id="new-account-button-two">+ Open account</button></div><div id="account-list-two" class="account-list"></div></div>
+      <div class="content hidden" id="payments-view">
+        <div class="section-heading page-section-heading"><div><span class="eyebrow">Payments</span><h2>Move money with intention.</h2></div></div>
+        <div class="payments-grid">
+          <form class="payment-panel" id="transfer-form"><div class="panel-heading"><span class="panel-icon">↗</span><div><h3>Make a transfer</h3><p>Send money to a saved beneficiary.</p></div></div><label>From account<select name="fromAccountId" id="transfer-account" required></select></label><label>Beneficiary<select name="beneficiaryId" id="transfer-beneficiary" required><option value="">Select a beneficiary</option></select></label><label>Amount<input name="amount" type="number" min="1" step="0.01" placeholder="0.00" required></label><p class="form-message" id="transfer-message"></p><button class="primary-button" type="submit">Review transfer <span>↗</span></button></form>
+          <div class="payment-panel"><div class="panel-heading"><span class="panel-icon">＋</span><div><h3>Add a beneficiary</h3><p>Save an account for quicker payments.</p></div></div><form id="beneficiary-form" class="form-stack"><label>Source account<select name="accountId" id="beneficiary-account" required></select></label><label>Account number<input name="beneficiaryAccountNumber" placeholder="Enter account number" required></label><label>Nickname<input name="nickname" placeholder="e.g. Rent, Family" required minlength="2"></label><p class="form-message" id="beneficiary-message"></p><button class="outline-button wide-button" type="submit">Save beneficiary <span>＋</span></button></form></div>
+        </div>
+        <div class="section-heading beneficiary-heading"><div><span class="eyebrow">Saved securely</span><h2>Beneficiaries</h2></div></div>
+        <div id="beneficiary-list" class="beneficiary-list"><div class="list-placeholder">Choose an active account to see saved beneficiaries.</div></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="account-dialog"><form method="dialog" id="account-form" class="dialog-card"><button class="close-dialog" value="cancel" aria-label="Close">×</button><span class="eyebrow">New account</span><h2>Choose your next chapter.</h2><p>Start with the minimum balance and your account will be ready for review.</p><label>Account type<select name="type"><option value="SAVINGS">Savings account</option><option value="CURRENT">Current account</option></select></label><label>Initial deposit<input type="number" name="initialDeposit" min="5000" step="0.01" placeholder="5000" required></label><p class="form-message" id="account-message"></p><button class="primary-button" type="submit">Submit application <span>↗</span></button></form></dialog>
+  <script src="/app.js"></script>
+</body>
+</html>
