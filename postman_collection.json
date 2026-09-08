@@ -1,8 +1,7 @@
 {
   "info": {
-    "_postman_id": "8432a9a7-9b4e-4b62-b91b-6899479b1834",
-    "name": "Member 2 - Beneficiary & Transfer APIs",
-    "description": "Postman Collection for Digital Banking Module 4 (Beneficiary Management), Module 5 (Fund Transfer Engine), and Module 8 (Limit & Balance Enforcement).",
+    "name": "Digital Banking Account and Transaction Management System - Master Postman Collection",
+    "description": "Consolidated, complete Postman Collection covering all 13 Functional Modules (Authentication, KYC, Accounts, Approvals, Beneficiaries, Transfers, Ledger, Statements, Limits, Suspicious Flagging, Freeze/Unfreeze, Interest Calculation, Staff Monitoring, and RBAC).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,24 +11,514 @@
       "type": "string"
     },
     {
-      "key": "token",
-      "value": "YOUR_JWT_TOKEN_HERE",
+      "key": "customerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "staffToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
       "type": "string"
     },
     {
       "key": "sourceAccountId",
-      "value": "60d0fe4f5311236168a109ca",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "destinationAccountId",
+      "value": "",
       "type": "string"
     },
     {
       "key": "beneficiaryId",
-      "value": "60d0fe4f5311236168a109cb",
+      "value": "",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Module 4 - Beneficiary Management",
+      "name": "Module 1 — Customer Onboarding & KYC Capture",
+      "item": [
+        {
+          "name": "1. Register Customer (201 Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"Password123!\",\n  \"kyc\": {\n    \"pan\": \"ABCDE1234F\",\n    \"dateOfBirth\": \"1992-08-15\",\n    \"address\": \"42 MG Road, Bangalore\",\n    \"phone\": \"9876543210\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Register Customer - Duplicate Email (409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Duplicate\",\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"Password123!\",\n  \"kyc\": {\n    \"pan\": \"ABCDE1234F\",\n    \"dateOfBirth\": \"1992-08-15\",\n    \"address\": \"42 MG Road, Bangalore\",\n    \"phone\": \"9876543210\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Register Customer - Missing Required Field (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Login Customer (200 Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Login - Invalid Credentials (401 Unauthorized)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"WrongPassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Get Customer Profile /me (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/customers/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "customers",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 2 — Account Approval Workflow",
+      "item": [
+        {
+          "name": "1. List Pending Accounts (Staff - 200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/staff/pending-accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "pending-accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Approve Account (Staff - 200 Success)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"remarks\": \"All KYC documents verified successfully\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "approve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Reject Account (Staff - 200 Success)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"remarks\": \"KYC document mismatch\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "approve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Get Approval History (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/approval-history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "approval-history"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Approve Account - Unauthorized Customer Attempt (403 Forbidden)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"remarks\": \"Self-approval attempt\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "approve"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 3 — Account Management",
+      "item": [
+        {
+          "name": "1. Create Savings Account (201 Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SAVINGS\",\n  \"initialDeposit\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Create Current Account (201 Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CURRENT\",\n  \"initialDeposit\": 10000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Create Account - Below Minimum Initial Deposit (400 Bad Request)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SAVINGS\",\n  \"initialDeposit\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. List Accounts (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Get Single Account by ID (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Get Account - Non-existent ID (404 Not Found)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "000000000000000000000000"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 4 — Beneficiary Management",
       "item": [
         {
           "name": "1. Add Beneficiary (201 Success)",
@@ -38,527 +527,951 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Alice Business\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries"
+              ]
             }
           }
         },
         {
-          "name": "2. Add Beneficiary - Invalid Source Account (404)",
+          "name": "2. Add Beneficiary - Duplicate Beneficiary (409 Conflict)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"accountId\": \"000000000000000000000000\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Alice Duplicate\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries"
+              ]
             }
           }
         },
         {
-          "name": "3. Add Beneficiary - Source Owned by Another User (403)",
+          "name": "3. Add Beneficiary - Self Account Rejection (400 Bad Request)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{otherUserAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
+              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000001\",\n  \"nickname\": \"My Own Account\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries"
+              ]
             }
           }
         },
         {
-          "name": "4. Add Beneficiary - Destination Doesn't Exist (404)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"99999999\",\n  \"nickname\": \"Non Existent\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
-            }
-          }
-        },
-        {
-          "name": "5. Add Beneficiary - Self Beneficiary (400)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000001\",\n  \"nickname\": \"My Account\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
-            }
-          }
-        },
-        {
-          "name": "6. Add Beneficiary - Duplicate Beneficiary (409)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
-            }
-          }
-        },
-        {
-          "name": "7. Add Beneficiary - Frozen Source Account (400)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": \"{{frozenAccountId}}\",\n  \"beneficiaryAccountNumber\": \"10000002\",\n  \"nickname\": \"Bob Office\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/beneficiaries",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries"]
-            }
-          }
-        },
-        {
-          "name": "8. List Own Beneficiaries by Account (200)",
+          "name": "4. List Beneficiaries for Account (200 Success)",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries/account/{{sourceAccountId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries", "account", "{{sourceAccountId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries",
+                "account",
+                "{{sourceAccountId}}"
+              ]
             }
           }
         },
         {
-          "name": "9. List Another User's Beneficiaries (403)",
+          "name": "5. Get Single Beneficiary by ID (200 Success)",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/beneficiaries/account/{{otherUserAccountId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries", "account", "{{otherUserAccountId}}"]
-            }
-          }
-        },
-        {
-          "name": "10. Get Beneficiary By ID (200)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries/{{beneficiaryId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries", "{{beneficiaryId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries",
+                "{{beneficiaryId}}"
+              ]
             }
           }
         },
         {
-          "name": "11. Delete Own Beneficiary (200)",
+          "name": "6. Delete Beneficiary (200 Success)",
           "request": {
             "method": "DELETE",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/beneficiaries/{{beneficiaryId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "beneficiaries", "{{beneficiaryId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "beneficiaries",
+                "{{beneficiaryId}}"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Module 5 & 8 - Fund Transfer Engine",
+      "name": "Module 5 — Fund Transfer Engine",
       "item": [
         {
-          "name": "1. Successful Transfer (200)",
+          "name": "1. Transfer Funds (200 Success)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 5000\n}"
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1500\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
             }
           }
         },
         {
-          "name": "2. Transfer - Zero Amount (400)",
+          "name": "2. Transfer - Self Transfer Rejection (400 Bad Request)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 0\n}"
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{selfBeneficiaryId}}\",\n  \"amount\": 1000\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
             }
           }
         },
         {
-          "name": "3. Transfer - Negative Amount (400)",
+          "name": "3. Transfer - Account Not Owned (403 Forbidden)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": -100\n}"
+              "raw": "{\n  \"fromAccountId\": \"000000000000000000000000\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1000\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 6 — Transaction Ledger",
+      "item": [
+        {
+          "name": "1. Get Account Transaction Ledger (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "transactions"
+              ]
             }
           }
         },
         {
-          "name": "4. Transfer - Excessive Decimal Places (400)",
+          "name": "2. Get Debit Transactions (?type=DEBIT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/transactions?type=DEBIT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "DEBIT"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Get Credit Transactions (?type=CREDIT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/transactions?type=CREDIT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "CREDIT"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Get Paginated Transactions (?page=1&limit=10)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/transactions?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 7 — Account Statement Generation",
+      "item": [
+        {
+          "name": "1. Generate Full Statement (200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/statement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "statement"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Date Filtered Statement (?from=2026-09-01&to=2026-09-30)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/statement?from=2026-09-01&to=2026-09-30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "statement"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-09-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-09-30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Statement - Invalid Date Range (400 Bad Request)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/statement?from=2026-09-30&to=2026-09-01",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "statement"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-09-30"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-09-01"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 8 — Minimum Balance & Limits Enforcement",
+      "item": [
+        {
+          "name": "1. Transfer - Insufficient Balance (409 Conflict)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 100.005\n}"
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 99999999\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
             }
           }
         },
         {
-          "name": "5. Transfer - Insufficient Balance (409)",
+          "name": "2. Transfer - Minimum Balance Violation (409 Conflict)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 9999999\n}"
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 4500\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
             }
           }
         },
         {
-          "name": "6. Transfer - Minimum Balance Violation (409)",
+          "name": "3. Transfer - Daily Transfer Limit Exceeded (409 Conflict)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               },
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 46000\n}"
+              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 30000\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "transfer"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 9 — Suspicious Transaction Flagging",
+      "item": [
+        {
+          "name": "1. Get Flagged Transactions (Staff - 200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/staff/flagged-transactions?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "flagged-transactions"
+              ]
             }
           }
         },
         {
-          "name": "7. Transfer - Daily Limit Exceeded (409)",
+          "name": "2. Flagged Transactions - Unauthorized Customer Attempt (403 Forbidden)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/staff/flagged-transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "flagged-transactions"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 10 — Account Freeze / Unfreeze Module",
+      "item": [
+        {
+          "name": "1. Freeze Account (Staff - 200 Success)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Suspicious high-value transfer pattern\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/freeze",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "freeze"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Freeze Account - Already Frozen (409 Conflict)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Attempting freeze on already frozen account\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/freeze",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "freeze"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Unfreeze Account (Staff - 200 Success)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Customer provided identity documentation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/unfreeze",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "unfreeze"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Get Account Status History (Staff - 200 Success)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{sourceAccountId}}/status-history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{sourceAccountId}}",
+                "status-history"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 11 — Interest Calculation Job Logic",
+      "item": [
+        {
+          "name": "1. Trigger Monthly Interest Calculation (Staff - 200 Success)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "Bearer {{staffToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 35000\n}"
-            },
             "url": {
-              "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "raw": "{{baseUrl}}/api/staff/interest/run",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "interest",
+                "run"
+              ]
             }
           }
         },
         {
-          "name": "8. Transfer - Frozen Source Account (409)",
+          "name": "2. Trigger Interest Job - Customer Unauthorized (403 Forbidden)",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "Bearer {{customerToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{frozenAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1000\n}"
-            },
             "url": {
-              "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "raw": "{{baseUrl}}/api/staff/interest/run",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "interest",
+                "run"
+              ]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Module 12 — Staff Monitoring Dashboard",
+      "item": [
         {
-          "name": "9. Transfer - Beneficiary Belongs to Another Account (403)",
+          "name": "1. Get Staff Dashboard Metrics (Staff - 200 Success)",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "Bearer {{staffToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{otherAccountBeneficiaryId}}\",\n  \"amount\": 1000\n}"
-            },
             "url": {
-              "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "raw": "{{baseUrl}}/api/staff/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "dashboard"
+              ]
             }
           }
         },
         {
-          "name": "10. Transfer - Missing JWT (401)",
+          "name": "2. Get Staff Dashboard - Date Range Filtered (200 Success)",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "key": "Authorization",
+                "value": "Bearer {{staffToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fromAccountId\": \"{{sourceAccountId}}\",\n  \"beneficiaryId\": \"{{beneficiaryId}}\",\n  \"amount\": 1000\n}"
-            },
             "url": {
-              "raw": "{{baseUrl}}/api/transactions/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transactions", "transfer"]
+              "raw": "{{baseUrl}}/api/staff/dashboard?from=2026-09-01&to=2026-09-30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "dashboard"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-09-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-09-30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Staff Dashboard - Customer Unauthorized (403 Forbidden)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/staff/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "dashboard"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module 13 — Role-Based Access Control (RBAC)",
+      "item": [
+        {
+          "name": "1. Unauthenticated Request Rejection (401 AUTH_REQUIRED)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Invalid JWT Token Rejection (401 INVALID_TOKEN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_12345"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Customer Accessing Staff-Only Route (403 FORBIDDEN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/staff/pending-accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "staff",
+                "pending-accounts"
+              ]
             }
           }
         }

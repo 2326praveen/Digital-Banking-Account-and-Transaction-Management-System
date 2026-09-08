@@ -9,6 +9,8 @@ const {
   recordOutgoingTransfer,
   getDailyOutgoingTotal
 } = require('../utils/transactionHelpers');
+const recordTransaction = require('../src/utils/recordTransaction');
+
 
 /**
  * Executes a fund transfer between accounts with atomic balance updates and strict validation.
@@ -230,6 +232,29 @@ const executeTransfer = async ({ fromAccountId, beneficiaryId, amount, currentUs
     transferId
   });
 
+  // Record ledger transactions for source (DEBIT) and destination (CREDIT)
+  try {
+    await recordTransaction({
+      accountId: sourceAccount._id,
+      type: 'DEBIT',
+      amount: toMajorUnits(transferAmountMinor),
+      balanceAfter: Number(remainingBalanceMajor.toFixed(2)),
+      relatedAccount: destAccount._id,
+      transferId
+    });
+
+    await recordTransaction({
+      accountId: destAccount._id,
+      type: 'CREDIT',
+      amount: toMajorUnits(transferAmountMinor),
+      balanceAfter: Number((destAccount.balance + toMajorUnits(transferAmountMinor)).toFixed(2)),
+      relatedAccount: sourceAccount._id,
+      transferId
+    });
+  } catch (ledgerErr) {
+    console.error('Warning: Failed to record ledger transaction:', ledgerErr.message);
+  }
+
   // Step 15: Return success response data
   return {
     transferId,
@@ -239,6 +264,7 @@ const executeTransfer = async ({ fromAccountId, beneficiaryId, amount, currentUs
     remainingBalance: Number(remainingBalanceMajor.toFixed(2))
   };
 };
+
 
 module.exports = {
   executeTransfer
