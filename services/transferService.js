@@ -109,21 +109,22 @@ const executeTransfer = async ({ fromAccountId, beneficiaryId, amount, currentUs
   let transferId;
   let remainingBalanceMajor;
 
-  const session = await mongoose.startSession();
-  try {
-    let supportsTransactions = true;
-    try {
-      session.startTransaction();
-    } catch (txErr) {
-      supportsTransactions = false;
-    }
+  let session = null;
+  let supportsTransactions = false;
 
-    if (supportsTransactions) {
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    supportsTransactions = true;
+  } catch (txErr) {
+    supportsTransactions = false;
+  }
+
+  if (supportsTransactions && session) {
+    try {
       // Transaction-based execution
       transferId = await generateTransferId(new Date(), session);
 
-      // Perform atomic conditional update on source account within transaction
-      // Re-verifying minimum balance constraint inside the database filter prevents race conditions
       const transferAmountMajor = toMajorUnits(transferAmountMinor);
       const minBalanceMajor = toMajorUnits(minimumBalanceMinor);
 
@@ -160,68 +161,82 @@ const executeTransfer = async ({ fromAccountId, beneficiaryId, amount, currentUs
 
       await session.commitTransaction();
       remainingBalanceMajor = updatedSource.balance;
-    } else {
-      // Standalone MongoDB fallback without replica set
-      transferId = await generateTransferId();
-      const transferAmountMajor = toMajorUnits(transferAmountMinor);
-      const minBalanceMajor = toMajorUnits(minimumBalanceMinor);
-
-      const updatedSource = await Account.findOneAndUpdate(
-        {
-          _id: sourceAccount._id,
-          status: 'ACTIVE',
-          $expr: {
-            $gte: [
-              { $round: [{ $subtract: ['$balance', transferAmountMajor] }, 2] },
-              minBalanceMajor
-            ]
-          }
-        },
-        {
-          $inc: { balance: -transferAmountMajor }
-        },
-        { new: true }
-      );
-
-      if (!updatedSource) {
-        throw new AppError('Transfer failed: Concurrency conflict or balance constraint violated', 409, 'MINIMUM_BALANCE_VIOLATION');
+    } catch (error) {
+      if (session.inTransaction()) {
+        try {
+          await session.abortTransaction();
+        } catch (abortErr) {
+          // Ignore abort errors
+        }
       }
 
-      const updatedDest = await Account.findOneAndUpdate(
-        { _id: destAccount._id, status: 'ACTIVE' },
-        { $inc: { balance: transferAmountMajor } },
-        { new: true }
-      );
+      const isTxUnsupported =
+        error.code === 20 ||
+        (error.message && (
+          error.message.includes('Transaction numbers are only allowed on a replica set') ||
+          error.message.includes('Transactions are not supported') ||
+          error.message.includes('replica set')
+        ));
 
-      if (!updatedDest) {
-        // Compensate source balance on failure
-        await Account.findByIdAndUpdate(sourceAccount._id, { $inc: { balance: transferAmountMajor } });
-        throw new AppError('Transfer failed: Destination account is unavailable or inactive', 409, 'ACCOUNT_NOT_ACTIVE');
+      if (isTxUnsupported) {
+        supportsTransactions = false;
+      } else {
+        // Translate MongoDB transaction write conflicts to 409 MINIMUM_BALANCE_VIOLATION
+        if (
+          error.code === 112 ||
+          (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) ||
+          (error.message && error.message.includes('WriteConflict'))
+        ) {
+          throw new AppError('Transfer failed: Concurrency conflict or balance constraint violated', 409, 'MINIMUM_BALANCE_VIOLATION');
+        }
+
+        throw error;
       }
-
-      remainingBalanceMajor = updatedSource.balance;
+    } finally {
+      await session.endSession();
     }
-  } catch (error) {
-    if (session.inTransaction()) {
-      try {
-        await session.abortTransaction();
-      } catch (abortErr) {
-        // Ignore abort errors
-      }
-    }
+  }
 
-    // Translate MongoDB transaction write conflicts to 409 MINIMUM_BALANCE_VIOLATION
-    if (
-      error.code === 112 ||
-      (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) ||
-      (error.message && error.message.includes('WriteConflict'))
-    ) {
+  if (!supportsTransactions) {
+    // Standalone MongoDB fallback without replica set
+    transferId = await generateTransferId();
+    const transferAmountMajor = toMajorUnits(transferAmountMinor);
+    const minBalanceMajor = toMajorUnits(minimumBalanceMinor);
+
+    const updatedSource = await Account.findOneAndUpdate(
+      {
+        _id: sourceAccount._id,
+        status: 'ACTIVE',
+        $expr: {
+          $gte: [
+            { $round: [{ $subtract: ['$balance', transferAmountMajor] }, 2] },
+            minBalanceMajor
+          ]
+        }
+      },
+      {
+        $inc: { balance: -transferAmountMajor }
+      },
+      { new: true }
+    );
+
+    if (!updatedSource) {
       throw new AppError('Transfer failed: Concurrency conflict or balance constraint violated', 409, 'MINIMUM_BALANCE_VIOLATION');
     }
 
-    throw error;
-  } finally {
-    await session.endSession();
+    const updatedDest = await Account.findOneAndUpdate(
+      { _id: destAccount._id, status: 'ACTIVE' },
+      { $inc: { balance: transferAmountMajor } },
+      { new: true }
+    );
+
+    if (!updatedDest) {
+      // Compensate source balance on failure
+      await Account.findByIdAndUpdate(sourceAccount._id, { $inc: { balance: transferAmountMajor } });
+      throw new AppError('Transfer failed: Destination account is unavailable or inactive', 409, 'ACCOUNT_NOT_ACTIVE');
+    }
+
+    remainingBalanceMajor = updatedSource.balance;
   }
 
   // Record outgoing transfer for daily limit tracking

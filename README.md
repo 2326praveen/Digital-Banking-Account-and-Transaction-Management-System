@@ -52,7 +52,14 @@ npm install
 Create a `.env` file in the root directory (based on `.env.example`):
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/digital_banking
+
+# Option A: Local MongoDB
+MONGO_URI=mongodb://127.0.0.1:27017/digital_banking
+
+# Option B: MongoDB Atlas (Cloud)
+# Note: If password contains special characters (e.g. @), URL-encode them (@ -> %40)
+# MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxx.mongodb.net/digital_banking?retryWrites=true&w=majority&appName=Cluster0
+
 JWT_SECRET=super_secret_jwt_key_digital_banking_2026
 JWT_EXPIRES_IN=1d
 NODE_ENV=development
@@ -60,7 +67,7 @@ TIMEZONE=Asia/Kolkata
 ANNUAL_INTEREST_RATE=4
 ```
 
-> **Note on MongoDB Transactions**: The Fund Transfer Engine automatically utilizes MongoDB multi-document ACID sessions when connected to a Replica Set (e.g. Atlas or local replSet). On standalone MongoDB instances without replica-set configuration, it gracefully falls back to atomic `$expr` conditional updates with balance verification.
+> **Note on MongoDB Transactions**: When connected to a Replica Set (such as MongoDB Atlas or local replica sets), the Fund Transfer Engine automatically utilizes MongoDB multi-document ACID sessions (`startSession`, `startTransaction`). On standalone instances, it seamlessly falls back to atomic `$expr` conditional balance updates.
 
 ### 4. Running the Application
 ```bash

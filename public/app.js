@@ -390,10 +390,11 @@ $('#beneficiary-account').addEventListener('change', event => loadBeneficiaries(
 $('#beneficiary-form').addEventListener('submit', async event => {
   event.preventDefault();
   $('#beneficiary-message').textContent = '';
-  const values = Object.fromEntries(new FormData(event.currentTarget));
+  const form = event.currentTarget;
+  const values = Object.fromEntries(new FormData(form));
   try {
     await request('/beneficiaries', { method: 'POST', body: JSON.stringify(values) });
-    event.currentTarget.reset();
+    form.reset();
     await loadBeneficiaries(values.accountId);
     $('#beneficiary-account').value = values.accountId;
     showToast('Beneficiary saved.');
@@ -403,24 +404,26 @@ $('#beneficiary-form').addEventListener('submit', async event => {
 $('#transfer-form').addEventListener('submit', async event => {
   event.preventDefault();
   $('#transfer-message').textContent = '';
-  const values = Object.fromEntries(new FormData(event.currentTarget));
+  const form = event.currentTarget;
+  const values = Object.fromEntries(new FormData(form));
   try {
     const result = await request('/transactions/transfer', { method: 'POST', body: JSON.stringify({ ...values, amount: Number(values.amount) }) });
     await loadDashboard();
-    event.currentTarget.reset();
+    form.reset();
     showToast(`Transfer complete · ${formatMoney(result.data.amount)}`);
   } catch (error) { $('#transfer-message').textContent = error.message; }
 });
 
 $('#account-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  const values = Object.fromEntries(new FormData(event.currentTarget));
+  const form = event.currentTarget;
+  const values = Object.fromEntries(new FormData(form));
   try {
     await request('/accounts', { method: 'POST', body: JSON.stringify({ ...values, initialDeposit: Number(values.initialDeposit) }) });
     $('#account-dialog').close();
     await loadDashboard();
     showToast('Account application submitted.');
-    event.currentTarget.reset();
+    form.reset();
   } catch (error) { setAccountMessage(error.message); }
 });
 
